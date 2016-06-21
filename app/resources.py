@@ -13,73 +13,74 @@ class BaseResource(Resource):
         select = "SELECT * FROM {}".format(name)
         where = create_where(name, args.keys()) if args else select
         result = query_db(where, args.values())
-        if len(data) == 0:
+        if len(result) == 0:
             abort(404)
         return result
 
     def insert(self, name, args):
         statement = create_insert(name, args.keys())
-        success, results = insert_db(statement, args)
-        if not success:
-            abort(409, errors=results)
-        return results
+        isPosted = insert_db(statement, args)
+        if not isPosted:
+            abort(500, errors={"message":"Data could not be posted"})
+        return args
 
 class League(BaseResource):
     arg_schema = schema["League"]
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.name, args)
-        return {self.name: result}
+        return {"data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
-        return {self.name: results}
+        return {"data": results}
 
 class Team(BaseResource):
     arg_schema = schema["Team"]
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.name, args)
-        return {self.name: result}
+        return {"data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
-        return {self.name: results}
+        return {"data": results}
+
 
 class Player(BaseResource):
     arg_schema = schema["Player"]
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.name, args)
-        return {self.name: result}
+        return {"data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
-        return {self.name: results}
+        return {"data": results}
 
 class LeaguePlayer(BaseResource):
     arg_schema = schema["LeaguePlayer"]
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.name, args)
-        return {self.name: result}
+        return {"data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
-        return {self.name: results}
+        return {"data": results}
 
 class Game(BaseResource):
     arg_schema = schema["Game"]
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.name, args)
-        return {self.name: result}
+        return {"data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
-        return {self.name: results}
+        return {"data": results}

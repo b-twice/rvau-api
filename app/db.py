@@ -37,9 +37,9 @@ def insert_db(query, args=()):
 	    with con:
 	        con.execute(query, args)
     		con.commit()
-    		return True, args
+    		return True
 	except sqlite3.IntegrityError:
-	    return (False, {"Post": "Record already exists"})
+	    return False
 
 
 def init_db():
