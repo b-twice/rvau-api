@@ -1,16 +1,20 @@
 CREATE TABLE League
 (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	league_year INT NOT NULL,
 	league_type TEXT NOT NULL,
-	PRIMARY KEY (league_year, league_type)
+	UNIQUE (league_year, league_type)
 );
 CREATE TABLE Team
 (
-	team_name TEXT NOT NULL PRIMARY KEY
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	team_name TEXT NOT NULL,
+	UNIQUE (team_name)
 );
 
 CREATE TABLE LeaguePlayer
 (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	league_year INT NOT NULL,
 	league_type TEXT NOT NULL,
 	team_name TEXT NOT NULL,
@@ -31,14 +35,16 @@ CREATE TABLE LeaguePlayer
 
 CREATE TABLE Player
 (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	first_name TEXT NOT NULL,
 	last_name TEXT NOT NULL,
 	email TEXT,
-	PRIMARY KEY (first_name, last_name)
+	UNIQUE (first_name, last_name)
 );
 
 CREATE TABLE Game
 (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	game_date DATE NOT NULL,
 	game_type TEXT NOT NULL,
 	league_year INTEGER NOT NULL,
