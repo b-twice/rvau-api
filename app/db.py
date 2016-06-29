@@ -10,36 +10,42 @@ def make_dicts(cursor, row):
 
 DATABASE = app.config["DATABASE_URI"]
 def get_db():
-	db = getattr(g, '_database', None)
-	if db is None:
-		db = g._database = sqlite3.connect(DATABASE)
-	db.row_factory = make_dicts
-	return db
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    db.row_factory = make_dicts
+    return db
 
 def create_where(query, keys):
-	arg_query = " AND ".join(["{}=?".format(key) for key in keys])
-	return "{} WHERE {}".format(query, arg_query)
+    arg_query = " AND ".join(["{}=?".format(key) for key in keys])
+    return "{} WHERE {}".format(query, arg_query)
 
 def create_insert(table, keys):
-	columns = ", ".join(keys)
-	values =  ", ".join([":{}".format(key) for key in keys])
-	return "INSERT INTO {} ({}) VALUES ({})".format(table, columns, values)
+    columns = ", ".join(keys)
+    values =  ", ".join([":{}".format(key) for key in keys])
+    return "INSERT INTO {} ({}) VALUES ({})".format(table, columns, values)
+
+def create_update(table, keys):
+    columns = ", ".join(keys)
+    values =  ", ".join(["{}=:{}".format(key, key) for key in keys])
+    return "UPDATE {} SET {} WHERE id=:id".format(table, values)
 
 def query_db(query, args=(), one=False):
-	cur = get_db().execute(query, args)
-	rv = cur.fetchall()
-	cur.close()
-	return (rv[0] if rv else None) if one else rv
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
 
 def insert_db(query, args=()):
-	con = get_db()
-	try:
-	    with con:
-	        con.execute(query, args)
-    		con.commit()
-    		return True
-	except sqlite3.IntegrityError:
-	    return False
+    con = get_db()
+    try:
+        with con:
+            con.execute('pragma foreign_keys=ON')
+            con.execute(query, args)
+            con.commit()
+            return True
+    except sqlite3.IntegrityError:
+        return False
 
 
 def init_db():
@@ -52,6 +58,6 @@ def init_db():
 
 @app.teardown_appcontext
 def close_connection(exception):
-	db = getattr(g, "_database", None)
-	if db is not None:
-		db.close()
+    db = getattr(g, "_database", None)
+    if db is not None:
+        db.close()

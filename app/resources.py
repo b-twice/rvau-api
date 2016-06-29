@@ -15,6 +15,7 @@ class BaseResource(Resource):
         result = query_db(where, args.values())
         if len(result) == 0:
             abort(404)
+            return
         return result
 
     def insert(self, name, args):
@@ -22,7 +23,17 @@ class BaseResource(Resource):
         isPosted = insert_db(statement, args)
         if not isPosted:
             abort(500, errors={"message":"Data could not be posted"})
+            return
         return args
+
+    def update(self, name, args):
+        statement = create_update(name, args.keys())
+        isUpdated = insert_db(statement, args)
+        if not isUpdated:
+            abort(500, errors={"message":"Data could not be updated"})
+            return
+        return args
+
 
 class League(BaseResource):
     arg_schema = schema["League"]
@@ -34,6 +45,11 @@ class League(BaseResource):
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
+        return {"data": results}
+
+    @use_args(arg_schema)
+    def put(self, args):
+        results = self.update(self.name, args)
         return {"data": results}
 
 class Team(BaseResource):
@@ -48,6 +64,10 @@ class Team(BaseResource):
         results = self.insert(self.name, args)
         return {"data": results}
 
+    @use_args(arg_schema)
+    def put(self, args):
+        results = self.update(self.name, args)
+        return {"data": results}
 
 class Player(BaseResource):
     arg_schema = schema["Player"]
@@ -61,6 +81,12 @@ class Player(BaseResource):
         results = self.insert(self.name, args)
         return {"data": results}
 
+    @use_args(arg_schema)
+    def put(self, args):
+        results = self.update(self.name, args)
+        return {"data": results}
+
+
 class LeaguePlayer(BaseResource):
     arg_schema = schema["LeaguePlayer"]
     @use_args(arg_schema)
@@ -73,6 +99,11 @@ class LeaguePlayer(BaseResource):
         results = self.insert(self.name, args)
         return {"data": results}
 
+    @use_args(arg_schema)
+    def put(self, args):
+        results = self.update(self.name, args)
+        return {"data": results}
+
 class Game(BaseResource):
     arg_schema = schema["Game"]
     @use_args(arg_schema)
@@ -83,4 +114,9 @@ class Game(BaseResource):
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
+        return {"data": results}
+
+    @use_args(arg_schema)
+    def put(self, args):
+        results = self.update(self.name, args)
         return {"data": results}
