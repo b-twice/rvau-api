@@ -1,4 +1,4 @@
-#!flask/bin/python
+    #!flask/bin/python
 from app import app
 from flask import Flask, g
 import sqlite3
@@ -16,9 +16,9 @@ def get_db():
     db.row_factory = make_dicts
     return db
 
-def create_where(query, keys):
+def create_where(select_query, keys):
     arg_query = " AND ".join(["{}=?".format(key) for key in keys])
-    return "{} WHERE {}".format(query, arg_query)
+    return "WHERE {}".format(arg_query)
 
 def create_insert(table, keys):
     columns = ", ".join(keys)
@@ -36,7 +36,7 @@ def query_db(query, args=(), one=False):
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
-def insert_db(query, args=()):
+def modify_db(query, args=()):
     con = get_db()
     try:
         with con:
