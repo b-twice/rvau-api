@@ -41,8 +41,6 @@ def modify_db(query, args=()):
     try:
         with con:
             con.execute('pragma foreign_keys=ON')
-            print query
-            print args
             con.execute(query, args)
             con.commit()
             return True

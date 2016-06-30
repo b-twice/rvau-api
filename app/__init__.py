@@ -3,7 +3,6 @@ from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS, cross_origin
 
-print __name__
 app = Flask(__name__)
 app.config.from_object('config')
 api = Api(app)

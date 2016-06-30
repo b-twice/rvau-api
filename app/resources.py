@@ -19,7 +19,7 @@ class BaseResource(Resource):
         statement = create_insert(name, args.keys())
         isPosted = modify_db(statement, args)
         if not isPosted:
-            abort(500)
+            abort(500, errors="Could not add the row. The row may already exist.")
             return
         return args
 
@@ -35,7 +35,7 @@ class BaseResource(Resource):
         statement = "DELETE FROM {} WHERE id=:id".format(name)
         isDelete = modify_db(statement, args)
         if not isDelete:
-            abort(500, "Could not delete record. Record may be in use by another table.")
+            abort(500, errors="Could not delete record. Record may be in use by another table.")
             return
         return args
 
