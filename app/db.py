@@ -41,10 +41,12 @@ def modify_db(query, args=()):
     try:
         with con:
             con.execute('pragma foreign_keys=ON')
+            print query
+            print args
             con.execute(query, args)
             con.commit()
             return True
-    except sqlite3.IntegrityError:
+    except sqlite3.IntegrityError as e:
         return False
 
 
