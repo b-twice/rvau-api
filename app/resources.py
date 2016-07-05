@@ -1,46 +1,9 @@
-from app import CLIENT_ID, CLIENT_SECRET
 from field_schema import schema
-from flask_restful import Resource, abort, wraps
-from db import *
+from flask_restful import Resource, abort
 from webargs.flaskparser import use_args, use_kwargs, parser
-import jwt
-import base64
-from flask import request
+from db import *
+from authentication import authenticate
 
-def authenticate(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        auth = request.headers.get('Authorization', None)
-        if not auth:
-            abort(401, errors={'code': 'authorization_header_missing', 'description': 'Authorization header is expected'})
-        parts = auth.split()
-
-        if parts[0].lower() != 'bearer':
-          abort(401, errors={'code': 'invalid_header', 'description': 'Authorization header must start with Bearer'})
-        elif len(parts) == 1:
-          abort(401, errors={'code': 'invalid_header', 'description': 'Token not found'})
-        elif len(parts) > 2:
-          abort(401, errors={'code': 'invalid_header', 'description': 'Authorization header must be Bearer + \s + token'})
-
-        token = parts[1]
-        try:
-            payload = jwt.decode(
-                token,
-                base64.b64decode(CLIENT_SECRET.replace("_","/").replace("-","+")),
-                audience=CLIENT_ID
-            )
-        except jwt.ExpiredSignature:
-            abort(401, errors={'code': 'token_expired', 'description': 'token is expired'})
-        except jwt.InvalidAudienceError:
-            abort(401, errors={'code': 'invalid_audience', 'description': 'incorrect audience, expected: TPZrTRxzqYySVXNwNsokXsFL25cTD1ML'})
-        except jwt.DecodeError:
-            abort(401, errors={'code': 'token_invalid_signature', 'description': 'token signature is invalid'})
-
-        return
-        # _request_ctx_stack.top.current_user = user = payload
-        # return f(*args, **kwargs)
-
-    return decorated
 
 class BaseResource(Resource):
 
@@ -78,6 +41,7 @@ class BaseResource(Resource):
         return args
 
 class Leagues(BaseResource):
+    method_decorators = [authenticate]
     arg_schema = schema["League"]
     def __init__(self):
         self.name = "League"
@@ -94,6 +58,7 @@ class Leagues(BaseResource):
 
 
 class League(BaseResource):
+    method_decorators = [authenticate]      
     arg_schema = schema["League"]
     def __init__(self):
         self.name = "League"
@@ -113,13 +78,14 @@ class League(BaseResource):
         return {"data": {"id":id}}
 
 class Teams(BaseResource):
-    method_decorators = [authenticate]   # applies to all inherited resources
+    method_decorators = [authenticate]
     arg_schema = schema["Team"]
     def __init__(self):
         self.name = "Team"
 
-    @use_args(arg_schema, locations=('headers'))
+    @use_args(arg_schema)
     def get(self, args):
+        print "hello"
         result = self.query(self.name, args)
         return {"data": result}
 
@@ -129,6 +95,7 @@ class Teams(BaseResource):
         return {"data": results}
 
 class Team(BaseResource):
+    method_decorators = [authenticate]
     arg_schema = schema["Team"]
     def __init__(self):
         self.name = "Team"
@@ -148,6 +115,7 @@ class Team(BaseResource):
         return {"data": {"id":id}}
 
 class Players(BaseResource):
+    method_decorators = [authenticate]
     arg_schema = schema["Player"]
     def __init__(self):
         self.name = "Player"
@@ -163,6 +131,7 @@ class Players(BaseResource):
         return {"data": results}
 
 class Player(BaseResource):
+    method_decorators = [authenticate]
     arg_schema = schema["Player"]
     def __init__(self):
         self.name = "Player"
@@ -182,6 +151,7 @@ class Player(BaseResource):
         return {"data": {"id":id}}
 
 class LeaguePlayers(BaseResource):
+    method_decorators = [authenticate]
     arg_schema = schema["LeaguePlayer"]
     def __init__(self):
         self.name = "LeaguePlayer"
@@ -197,6 +167,7 @@ class LeaguePlayers(BaseResource):
         return {"data": results}
 
 class LeaguePlayer(BaseResource):
+    method_decorators = [authenticate]
     arg_schema = schema["LeaguePlayer"]
     def __init__(self):
         self.name = "LeaguePlayer"
@@ -216,6 +187,7 @@ class LeaguePlayer(BaseResource):
         return {"data": {"id":id}}
 
 class Games(BaseResource):
+    method_decorators = [authenticate]
     arg_schema = schema["Game"]
 
     def __init__(self):
@@ -233,6 +205,7 @@ class Games(BaseResource):
 
 
 class Game(BaseResource):
+    method_decorators = [authenticate]
     arg_schema = schema["Game"]
 
     def __init__(self):
