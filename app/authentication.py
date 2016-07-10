@@ -34,7 +34,5 @@ def authenticate(func):
             abort(401, errors={'code': 'token_invalid_signature', 'description': 'token signature is invalid'})
 
         return func(*args, **kwargs)
-        # _request_ctx_stack.top.current_user = user = payload
-        # return f(*args, **kwargs)
 
     return decorated

@@ -45,6 +45,7 @@ def modify_db(query, args=()):
             con.commit()
             return True
     except sqlite3.IntegrityError as e:
+        print query, args
         return False
 
 

@@ -9,8 +9,12 @@ class BaseResource(Resource):
 
     def query(self, name, args):
         select = "SELECT * FROM {}".format(name)
-        where = "{} {}".format(select, create_where(name, args.keys())) if args else select
-        result = query_db(where, args.values())
+        if 'unique' in args:
+            select = "SELECT {} FROM {} GROUP BY {}".format(args["unique"], name, args["unique"])
+            args.pop('unique', None)
+        else:
+             select = "{} {}".format(select, create_where(name, args.keys())) if args else select
+        result = query_db(select, args.values())
         if len(result) == 0:
             abort(404)
             return
@@ -22,8 +26,8 @@ class BaseResource(Resource):
         if not isPosted:
             abort(500, errors="Could not add the row. The row may already exist.")
             return
-        return args
-
+        # Get full result of query
+        return self.query(name, args)[0]
     def update(self, name, args):
         statement = create_update(name, args.keys())
         isUpdated = modify_db(statement, args)
@@ -41,7 +45,7 @@ class BaseResource(Resource):
         return args
 
 class Leagues(BaseResource):
-    method_decorators = [authenticate]
+    # method_decorators = [authenticate]
     arg_schema = schema["League"]
     def __init__(self):
         self.name = "League"
@@ -85,7 +89,6 @@ class Teams(BaseResource):
 
     @use_args(arg_schema)
     def get(self, args):
-        print "hello"
         result = self.query(self.name, args)
         return {"data": result}
 
@@ -200,6 +203,7 @@ class Games(BaseResource):
 
     @use_args(arg_schema)
     def post(self, args):
+        print args
         results = self.insert(self.name, args)
         return {"data": results}
 

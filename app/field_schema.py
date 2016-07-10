@@ -4,7 +4,9 @@ schema = {
 	"League": {
 		'id': fields.Int(),
 		'league_type': fields.Str(),
-		'league_year': fields.Int()
+		'league_year': fields.Int(),
+
+		'unique': fields.Str() # sql condition
 	},
 	"Team": {
 		'id': fields.Int(),
@@ -16,7 +18,9 @@ schema = {
 		'league_type': fields.Str(),
 		'team_name': fields.Str(),
 		'player_first_name': fields.Str(),
-		'player_last_name': fields.Str()
+		'player_last_name': fields.Str(),
+
+		'unique': fields.Str()
 	},
 	"Player": {
 		'id': fields.Int(),
@@ -33,7 +37,9 @@ schema = {
 		'home_team': fields.Str(),
 		'away_team': fields.Str(),
 		'home_score': fields.Int(),
-		'away_score': fields.Int()
+		'away_score': fields.Int(),
+
+		'unique': fields.Str()
 	}
 
 }
