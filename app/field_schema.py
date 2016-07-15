@@ -8,6 +8,14 @@ schema = {
 
 		'unique': fields.Str() # sql condition
 	},
+	"LeagueView": {
+		'id': fields.Int(),
+		'league_type': fields.Str(),
+		'league_year': fields.Int(),
+		'league': fields.Str(),
+
+		'unique': fields.Str() # sql condition
+	},
 	"Team": {
 		'id': fields.Int(),
 		'team_name': fields.Str()
@@ -17,8 +25,18 @@ schema = {
 		'league_year': fields.Int(),
 		'league_type': fields.Str(),
 		'team_name': fields.Str(),
-		'player_first_name': fields.Str(),
-		'player_last_name': fields.Str(),
+		'first_name': fields.Str(),
+		'last_name': fields.Str(),
+		'player_type': fields.Str(),
+
+		'unique': fields.Str()
+	},
+	"LeaguePlayerView": {
+		'id': fields.Int(),
+		'league': fields.Str(),
+		'team_name': fields.Str(),
+		'player_name': fields.Str(),
+		'player_type': fields.Str(),
 
 		'unique': fields.Str()
 	},
@@ -34,6 +52,19 @@ schema = {
 		'game_type': fields.Str(),
 		'league_year': fields.Int(),
 		'league_type': fields.Str(),
+		'home_team': fields.Str(),
+		'away_team': fields.Str(),
+		'home_score': fields.Int(),
+		'away_score': fields.Int(),
+
+		'unique': fields.Str()
+	},
+
+	"GameView": {
+		'id': fields.Int(),
+		'game_date': fields.Str(),
+		'game_type': fields.Str(),
+		'league': fields.Str(),
 		'home_team': fields.Str(),
 		'away_team': fields.Str(),
 		'home_score': fields.Int(),

@@ -18,8 +18,9 @@ CREATE TABLE LeaguePlayer
 	league_year INT NOT NULL,
 	league_type TEXT NOT NULL,
 	team_name TEXT NOT NULL,
-	player_first_name TEXT NOT NULL,
-	player_last_name TEXT NOT NULL,
+	first_name TEXT NOT NULL,
+	last_name TEXT NOT NULL,
+	player_type TEXT NOT NULL,
 
 	FOREIGN KEY (team_name) 
 		REFERENCES Team(team_name)
@@ -27,10 +28,10 @@ CREATE TABLE LeaguePlayer
 	FOREIGN KEY (league_year, league_type)
 		REFERENCES League(league_year, league_type)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
-	FOREIGN KEY (player_first_name, player_last_name)
+	FOREIGN KEY (first_name, last_name)
 		REFERENCES Player(first_name, last_name)
-		ON UPDATE CASCADE ON DELETE CASCADE,
-	UNIQUE (league_year, league_type, team_name, player_first_name, player_last_name)
+		ON UPDATE CASCADE ON DELETE NO ACTION,
+	UNIQUE (league_year, league_type, team_name, first_name, last_name, player_type)
 );
 
 CREATE TABLE Player
@@ -69,3 +70,13 @@ CREATE TABLE Game
 
 --Enable Cascade
 pragma foreign_keys=on;
+
+CREATE VIEW LeaguePlayerView 
+(
+	SELECT 
+		id, 
+		(league_year || ' ' || league_type) AS league,
+		teamn_name,
+		(first_name || ' ' || last_name) AS player_name,
+		player_type
+)
