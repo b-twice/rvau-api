@@ -7,7 +7,17 @@ from authentication import authenticate
 
 class BaseResource(Resource):
 
-    def query(self, name, args):
+    def decompose(self, args):
+        if 'league' in args:
+            args["league_year"] = args['league'].split(' ')[0]
+            args["league_type"] = args['league'].split(' ')[1]
+            args.pop('league')
+        if 'player_name' in args:
+            args["first_name"] = args['player_name'].split(' ')[0]
+            args["last_name"] = args['player_name'].split(' ')[1]
+            args.pop('player_name')
+
+    def query(self, name, args,):
         select = "SELECT * FROM {}".format(name)
         if 'unique' in args:
             select = "SELECT {} FROM {} GROUP BY {}".format(args["unique"], name, args["unique"])
@@ -20,14 +30,14 @@ class BaseResource(Resource):
             return
         return result
 
-    def insert(self, name, args):
+    def insert(self, name, args, view_name=""):
         statement = create_insert(name, args.keys())
-        isPosted = modify_db(statement, args)
-        if not isPosted:
+        insertId = modify_db(statement, args)
+        if not insertId:
             abort(500, errors="Could not add the row. The row may already exist.")
             return
         # Get full result of query
-        return self.query(name, args)[0]
+        return self.query(view_name, {'id': insertId})[0] if view_name else self.query(name, {'id': insertId})[0]
 
     def update(self, name, args):
         statement = create_update(name, args.keys())
@@ -46,14 +56,13 @@ class BaseResource(Resource):
         return args
 
 class Leagues(BaseResource):
-    # method_decorators = [authenticate]
+    method_decorators = [authenticate]
     arg_schema = schema["League"]
-    view_schema = schema["LeagueView"]
     def __init__(self):
         self.name = "League"
         self.view_name = "LeagueView"
 
-    @use_args(view_schema)
+    @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
         return {"table": self.name, "data": result}
@@ -159,20 +168,20 @@ class Player(BaseResource):
 
 class LeaguePlayers(BaseResource):
     method_decorators = [authenticate]
-    view_schema = schema["LeaguePlayerView"]
     arg_schema = schema["LeaguePlayer"]
     def __init__(self):
         self.name = "LeaguePlayer"
-        self.name_view = "LeaguePlayerView"
+        self.view_name = "LeaguePlayerView"
 
-    @use_args(view_schema)
+    @use_args(arg_schema)
     def get(self, args):
-        result = self.query(self.name_view, args)
+        result = self.query(self.view_name, args)
         return {"table": self.name, "data": result}
 
     @use_args(arg_schema)
     def post(self, args):
-        results = self.insert(self.name, args)
+        self.decompose(args)
+        results = self.insert(self.name, args, self.view_name)
         return {"table": self.name, "data": results}
 
 class LeaguePlayer(BaseResource):
@@ -189,6 +198,7 @@ class LeaguePlayer(BaseResource):
     @use_args(arg_schema)
     def put(self, args, id):
         args["id"] = id
+        self.decompose(args)
         results = self.update(self.name, args)
         return {"table": self.name, "data": results}
 
@@ -199,13 +209,12 @@ class LeaguePlayer(BaseResource):
 class Games(BaseResource):
     method_decorators = [authenticate]
     arg_schema = schema["Game"]
-    view_schema = schema["GameView"]
 
     def __init__(self):
         self.name = "Game"
         self.view_name = "GameView"
 
-    @use_args(view_schema)
+    @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
         return {"table": self.name, "data": result}

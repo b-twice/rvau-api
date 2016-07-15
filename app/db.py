@@ -40,10 +40,12 @@ def modify_db(query, args=()):
     con = get_db()
     try:
         with con:
-            con.execute('pragma foreign_keys=ON')
-            con.execute(query, args)
+            cur =con.cursor()
+            cur.execute('pragma foreign_keys=ON')
+            cur.execute(query, args)
             con.commit()
-            return True
+            cur.lastrowid
+            return cur.lastrowid
     except sqlite3.IntegrityError as e:
         print query, args
         return False
