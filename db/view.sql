@@ -17,6 +17,16 @@ CREATE VIEW LeagueView AS
 		(league_year || ' ' || league_type) AS league
 	FROM League;
 
+DROP VIEW IF EXISTS PlayerView;
+CREATE VIEW PlayerView AS
+	SELECT 
+		id, 
+		first_name,
+		last_name,
+		email,
+		(first_name || ' ' || last_name) AS player_name
+	FROM Player;
+
 
 
 DROP VIEW IF EXISTS GameView;

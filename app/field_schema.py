@@ -12,7 +12,9 @@ schema = {
 	},
 	"Team": {
 		'id': fields.Int(),
-		'team_name': fields.Str()
+		'team_name': fields.Str(),
+
+		'unique': fields.Str()
 	},
 	"LeaguePlayer" : {
 		'id': fields.Int(),	
@@ -32,7 +34,11 @@ schema = {
 		'id': fields.Int(),
 		'first_name': fields.Str(),
 		'last_name': fields.Str(),
-		'email': fields.Str()
+		'email': fields.Str(),
+
+		'player_name': fields.Str(),
+
+		'unique': fields.Str()
 	},
 	"Game": {
 		'id': fields.Int(),

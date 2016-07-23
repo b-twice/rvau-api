@@ -61,16 +61,17 @@ class Leagues(BaseResource):
     def __init__(self):
         self.name = "League"
         self.view_name = "LeagueView"
+        self.alias = "leagues"
 
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
 
 class League(BaseResource):
@@ -79,16 +80,17 @@ class League(BaseResource):
     def __init__(self):
         self.name = "League"
         self.view_name = "LeagueView"
+        self.alias = "leagues"
 
     def get(self, id):
         result = self.query(self.view_name, {"id":id})
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
@@ -99,32 +101,34 @@ class Teams(BaseResource):
     arg_schema = schema["Team"]
     def __init__(self):
         self.name = "Team"
+        self.alias = "teams"
 
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.name, args)
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
 class Team(BaseResource):
     method_decorators = [authenticate]
     arg_schema = schema["Team"]
     def __init__(self):
         self.name = "Team"
+        self.alias = "teams"
 
     def get(self, id):
         result = self.query(self.name, {"id":id})
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
@@ -135,11 +139,13 @@ class Players(BaseResource):
     arg_schema = schema["Player"]
     def __init__(self):
         self.name = "Player"
+        self.view_name = "PlayerView"
+        self.alias = "players"   
 
     @use_args(arg_schema)
     def get(self, args):
-        result = self.query(self.name, args)
-        return {"table": self.name, "data": result}
+        result = self.query(self.view_name, args)
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def post(self, args):
@@ -151,16 +157,17 @@ class Player(BaseResource):
     arg_schema = schema["Player"]
     def __init__(self):
         self.name = "Player"
+        self.alias = "players"
 
     def get(self, id):
         result = self.query(self.name, {"id":id})
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
@@ -172,17 +179,18 @@ class LeaguePlayers(BaseResource):
     def __init__(self):
         self.name = "LeaguePlayer"
         self.view_name = "LeaguePlayerView"
+        self.alias = "leagueplayers"
 
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         self.decompose(args)
         results = self.insert(self.name, args, self.view_name)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
 class LeaguePlayer(BaseResource):
     method_decorators = [authenticate]
@@ -190,17 +198,18 @@ class LeaguePlayer(BaseResource):
     def __init__(self):
         self.name = "LeaguePlayer"
         self.view_name = "LeaguePlayerView"
+        self.alias = "leagueplayers"
 
     def get(self, id):
         result = self.query(self.view_name, {"id":id})
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def put(self, args, id):
         args["id"] = id
         self.decompose(args)
         results = self.update(self.name, args)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
@@ -213,17 +222,18 @@ class Games(BaseResource):
     def __init__(self):
         self.name = "Game"
         self.view_name = "GameView"
+        self.alias = "games"
 
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def post(self, args):
         print args
         results = self.insert(self.name, args)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
 
 class Game(BaseResource):
@@ -233,16 +243,17 @@ class Game(BaseResource):
     def __init__(self):
         self.name = "Game"
         self.view_name = "GameView"
+        self.alias = "games"
 
     def get(self, id):
         result = self.query(self.view_name, {"id":id})
-        return {"table": self.name, "data": result}
+        return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
-        return {"table": self.name, "data": results}
+        return {"table": self.alias, "data": results}
 
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
