@@ -56,7 +56,6 @@ class BaseResource(Resource):
         return args
 
 class Leagues(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["League"]
     def __init__(self):
         self.name = "League"
@@ -69,13 +68,13 @@ class Leagues(BaseResource):
         return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
+    @authenticate
     def post(self, args):
         results = self.insert(self.name, args)
         return {"table": self.alias, "data": results}
 
 
-class League(BaseResource):
-    method_decorators = [authenticate]      
+class League(BaseResource):     
     arg_schema = schema["League"]
     def __init__(self):
         self.name = "League"
@@ -87,17 +86,18 @@ class League(BaseResource):
         return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
+    @authenticate  
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
         return {"table": self.alias, "data": results}
 
+    @authenticate
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
         return {"data": {"id":id}}
 
 class Teams(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["Team"]
     def __init__(self):
         self.name = "Team"
@@ -107,14 +107,14 @@ class Teams(BaseResource):
     def get(self, args):
         result = self.query(self.name, args)
         return {"table": self.alias, "data": result}
-
+    
+    @authenticate
     @use_args(arg_schema)
     def post(self, args):
         results = self.insert(self.name, args)
         return {"table": self.alias, "data": results}
 
 class Team(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["Team"]
     def __init__(self):
         self.name = "Team"
@@ -125,17 +125,18 @@ class Team(BaseResource):
         return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
+    @authenticate
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
         return {"table": self.alias, "data": results}
 
+    @authenticate
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
         return {"data": {"id":id}}
 
 class Players(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["Player"]
     def __init__(self):
         self.name = "Player"
@@ -148,12 +149,12 @@ class Players(BaseResource):
         return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
+    @authenticate
     def post(self, args):
         results = self.insert(self.name, args)
         return {"table": self.name, "data": results}
 
 class Player(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["Player"]
     def __init__(self):
         self.name = "Player"
@@ -164,17 +165,18 @@ class Player(BaseResource):
         return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
+    @authenticate
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
         return {"table": self.alias, "data": results}
 
+    @authenticate
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
         return {"data": {"id":id}}
 
 class LeaguePlayers(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["LeaguePlayer"]
     def __init__(self):
         self.name = "LeaguePlayer"
@@ -186,6 +188,7 @@ class LeaguePlayers(BaseResource):
         result = self.query(self.view_name, args)
         return {"table": self.alias, "data": result}
 
+    @authenticate
     @use_args(arg_schema)
     def post(self, args):
         self.decompose(args)
@@ -193,7 +196,6 @@ class LeaguePlayers(BaseResource):
         return {"table": self.alias, "data": results}
 
 class LeaguePlayer(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["LeaguePlayer"]
     def __init__(self):
         self.name = "LeaguePlayer"
@@ -205,18 +207,19 @@ class LeaguePlayer(BaseResource):
         return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
+    @authenticate
     def put(self, args, id):
         args["id"] = id
         self.decompose(args)
         results = self.update(self.name, args)
         return {"table": self.alias, "data": results}
 
+    @authenticate
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
         return {"data": {"id":id}}
 
 class Games(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["Game"]
 
     def __init__(self):
@@ -230,6 +233,7 @@ class Games(BaseResource):
         return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
+    @authenticate
     def post(self, args):
         print args
         results = self.insert(self.name, args)
@@ -237,7 +241,6 @@ class Games(BaseResource):
 
 
 class Game(BaseResource):
-    method_decorators = [authenticate]
     arg_schema = schema["Game"]
 
     def __init__(self):
@@ -250,11 +253,13 @@ class Game(BaseResource):
         return {"table": self.alias, "data": result}
 
     @use_args(arg_schema)
+    @authenticate
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
         return {"table": self.alias, "data": results}
 
+    @authenticate
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
         return {"data": {"id":id}}
