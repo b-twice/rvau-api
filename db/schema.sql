@@ -67,16 +67,17 @@ CREATE TABLE Game
 	UNIQUE (game_date, game_type, league_year, league_type, home_team, away_team)
 );
 
+CREATE TABLE LeagueSummary
+(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	league TEXT NOT NULL,
+	team_name TEXT NOT NULL,
+	win_count INTEGER DEFAULT(0),
+	loss_count INTEGER DEFAULT(0),
+	tie_count INTEGER DEFAULT(0),
+	champion INTEGER DEFAULT(0),
+	UNIQUE (league, team_name)
+);
 
 --Enable Cascade
 pragma foreign_keys=on;
-
-CREATE VIEW LeaguePlayerView 
-(
-	SELECT 
-		id, 
-		(league_year || ' ' || league_type) AS league,
-		teamn_name,
-		(first_name || ' ' || last_name) AS player_name,
-		player_type
-)
