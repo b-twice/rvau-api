@@ -263,3 +263,16 @@ class Game(BaseResource):
     def delete(self, id):
         results = self.deleteRecord(self.name, {"id":id})
         return {"data": {"id":id}}
+
+
+class LeagueSummary(BaseResource):
+    arg_schema = schema["LeagueSummary"]
+    
+    def __init__(self):
+        self.name = "LeagueSummary"
+        self.alias = "leaguesummary"
+
+    @use_args(arg_schema)
+    def get(self, args):
+        result = self.query(self.name, args)
+        return {"table": self.alias, "data": result}

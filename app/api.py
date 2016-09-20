@@ -21,6 +21,8 @@ class Routing(object):
     games = "{}games".format(base)
     game = "{}games/<id>".format(base)
 
+    league_summary = "{}leaguesummary".format(base)
+
  # This error handler is necessary for usage with Flask-RESTful
 @parser.error_handler
 def handle_request_parsing_error(err):
@@ -43,3 +45,5 @@ api.add_resource(Player, Routing.player, endpoint="player")
 
 api.add_resource(Games, Routing.games, endpoint="games")
 api.add_resource(Game, Routing.game, endpoint="game")
+
+api.add_resource(LeagueSummary, Routing.league_summary, endpoint="leaguesummary")

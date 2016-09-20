@@ -56,4 +56,16 @@ schema = {
 		'unique': fields.Str()
 	},
 
+	"LeagueSummary": {
+
+		'id': fields.Int(),
+		'league': fields.Str(),
+		'team_name': fields.Str(),
+		'win_count': fields.Int(),
+		'loss_count': fields.Int(),
+		'tie_count': fields.Int(),
+		'champion': fields.Int()
+	}
+
+
 }
