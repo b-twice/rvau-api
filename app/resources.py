@@ -65,7 +65,7 @@ class Leagues(BaseResource):
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result,  "keys":schema["League"].keys()}
 
     @use_args(arg_schema)
     @authenticate
@@ -83,7 +83,7 @@ class League(BaseResource):
 
     def get(self, id):
         result = self.query(self.view_name, {"id":id})
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result,  "keys":schema["League"].keys()}
 
     @use_args(arg_schema)
     @authenticate  
@@ -106,7 +106,7 @@ class Teams(BaseResource):
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.name, args)
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result,  "keys":schema["Team"].keys()}
     
     @authenticate
     @use_args(arg_schema)
@@ -122,14 +122,14 @@ class Team(BaseResource):
 
     def get(self, id):
         result = self.query(self.name, {"id":id})
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result,  "keys":schema["Team"].keys()}
 
     @use_args(arg_schema)
     @authenticate
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
-        return {"table": self.alias, "data": results}
+        return {"table": self.alias, "data": results,}
 
     @authenticate
     def delete(self, id):
@@ -146,7 +146,7 @@ class Players(BaseResource):
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result,  "keys":schema["Player"].keys()}
 
     @use_args(arg_schema)
     @authenticate
@@ -162,7 +162,7 @@ class Player(BaseResource):
 
     def get(self, id):
         result = self.query(self.name, {"id":id})
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result,  "keys":schema["Player"].keys()}
 
     @use_args(arg_schema)
     @authenticate
@@ -186,7 +186,7 @@ class LeaguePlayers(BaseResource):
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result, "keys":schema["LeaguePlayer"].keys()}
 
     @authenticate
     @use_args(arg_schema)
@@ -212,7 +212,7 @@ class LeaguePlayer(BaseResource):
         args["id"] = id
         self.decompose(args)
         results = self.update(self.name, args)
-        return {"table": self.alias, "data": results}
+        return {"table": self.alias, "data": results, "keys":schema["LeaguePlayer"].keys()}
 
     @authenticate
     def delete(self, id):
@@ -230,7 +230,7 @@ class Games(BaseResource):
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.view_name, args)
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result, "keys":schema["Game"].keys()}
 
     @use_args(arg_schema)
     @authenticate
@@ -250,14 +250,14 @@ class Game(BaseResource):
 
     def get(self, id):
         result = self.query(self.view_name, {"id":id})
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result, "keys":schema["Game"].keys()}
 
     @use_args(arg_schema)
     @authenticate
     def put(self, args, id):
         args["id"] = id
         results = self.update(self.name, args)
-        return {"table": self.alias, "data": results}
+        return {"table": self.alias, "data": results, "keys":schema["Game"].keys()}
 
     @authenticate
     def delete(self, id):
@@ -275,4 +275,4 @@ class LeagueSummary(BaseResource):
     @use_args(arg_schema)
     def get(self, args):
         result = self.query(self.name, args)
-        return {"table": self.alias, "data": result}
+        return {"table": self.alias, "data": result, "keys":schema["LeagueSummary"].keys()}
