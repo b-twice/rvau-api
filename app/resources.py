@@ -1,4 +1,5 @@
 from field_schema import schema
+from field_map import fields
 from flask_restful import Resource, abort
 from webargs.flaskparser import use_args, use_kwargs, parser
 from db import *
@@ -6,6 +7,9 @@ from authentication import authenticate
 
 
 class BaseResource(Resource):
+
+    def __init__(self):
+        self.query_params = ['unique', 'exclude']
 
     def decompose(self, args):
         if 'league' in args:
@@ -17,18 +21,30 @@ class BaseResource(Resource):
             args["last_name"] = args['player_name'].split(' ')[1]
             args.pop('player_name')
 
-    def query(self, name, args,):
-        select = "SELECT * FROM {}".format(name)
+    def cleanup_args(self, args):
+        args.pop('unique', None)
+        args.pop('exclude', None)
+
+    def query(self, name, args):
+        columns = []
+        # get all unique values in a specific column
         if 'unique' in args:
+            columns = [args["unique"]]
             select = "SELECT {} FROM {} GROUP BY {}".format(args["unique"], name, args["unique"])
-            args.pop('unique', None)
+            self.cleanup_args(args)
         else:
-             select = "{} {}".format(select, create_where(name, args.keys())) if args else select
+            columns = fields[name]
+            # Exclude removes any columns from query
+            if 'exclude' in args:
+                columns = [c for c in columns if c not in args['exclude'].split(',')]
+            self.cleanup_args(args)
+            select = "SELECT {} FROM {}".format(",".join(columns), name)     
+            select = "{} {}".format(select, create_where(name, args.keys())) if args else select
         result = query_db(select, args.values())
         if len(result) == 0:
             abort(404)
             return
-        return result
+        return result, columns
 
     def insert(self, name, args, view_name=""):
         statement = create_insert(name, args.keys())
@@ -64,11 +80,11 @@ class Leagues(BaseResource):
 
     @use_args(arg_schema)
     def get(self, args):
-        result = self.query(self.view_name, args)
-        return {"table": self.alias, "data": result,  "keys":schema["League"].keys()}
+        result, columns = self.query(self.view_name, args)
+        return {"table": self.alias, "data": result,  "keys":columns}
 
     @use_args(arg_schema)
-    @authenticate
+    @authenticate 
     def post(self, args):
         results = self.insert(self.name, args)
         return {"table": self.alias, "data": results}
@@ -82,8 +98,8 @@ class League(BaseResource):
         self.alias = "leagues"
 
     def get(self, id):
-        result = self.query(self.view_name, {"id":id})
-        return {"table": self.alias, "data": result,  "keys":schema["League"].keys()}
+        result, columns = self.query(self.view_name,  {"id":id})
+        return {"table": self.alias, "data": result,  "keys":columns}
 
     @use_args(arg_schema)
     @authenticate  
@@ -105,8 +121,8 @@ class Teams(BaseResource):
 
     @use_args(arg_schema)
     def get(self, args):
-        result = self.query(self.name, args)
-        return {"table": self.alias, "data": result,  "keys":schema["Team"].keys()}
+        result, columns = self.query(self.name, args)
+        return {"table": self.alias, "data": result,  "keys":columns}
     
     @authenticate
     @use_args(arg_schema)
@@ -161,8 +177,8 @@ class Player(BaseResource):
         self.alias = "players"
 
     def get(self, id):
-        result = self.query(self.name, {"id":id})
-        return {"table": self.alias, "data": result,  "keys":schema["Player"].keys()}
+        result, columns = self.query(self.name, {"id":id})
+        return {"table": self.alias, "data": result,  "keys":columns}
 
     @use_args(arg_schema)
     @authenticate
@@ -185,8 +201,8 @@ class LeaguePlayers(BaseResource):
 
     @use_args(arg_schema)
     def get(self, args):
-        result = self.query(self.view_name, args)
-        return {"table": self.alias, "data": result, "keys":schema["LeaguePlayer"].keys()}
+        result, columns = self.query(self.view_name, args)
+        return {"table": self.alias, "data": result, "keys":columns}
 
     @authenticate
     @use_args(arg_schema)
@@ -203,8 +219,8 @@ class LeaguePlayer(BaseResource):
         self.alias = "leagueplayers"
 
     def get(self, id):
-        result = self.query(self.view_name, {"id":id})
-        return {"table": self.alias, "data": result}
+        result, columns = self.query(self.view_name, {"id":id})
+        return {"table": self.alias, "data": result, keys: columns}
 
     @use_args(arg_schema)
     @authenticate
@@ -212,7 +228,7 @@ class LeaguePlayer(BaseResource):
         args["id"] = id
         self.decompose(args)
         results = self.update(self.name, args)
-        return {"table": self.alias, "data": results, "keys":schema["LeaguePlayer"].keys()}
+        return {"table": self.alias, "data": results}
 
     @authenticate
     def delete(self, id):
@@ -229,8 +245,8 @@ class Games(BaseResource):
 
     @use_args(arg_schema)
     def get(self, args):
-        result = self.query(self.view_name, args)
-        return {"table": self.alias, "data": result, "keys":schema["Game"].keys()}
+        result, columns = self.query(self.view_name, args)
+        return {"table": self.alias, "data": result, "keys":columns}
 
     @use_args(arg_schema)
     @authenticate
@@ -249,8 +265,8 @@ class Game(BaseResource):
         self.alias = "games"
 
     def get(self, id):
-        result = self.query(self.view_name, {"id":id})
-        return {"table": self.alias, "data": result, "keys":schema["Game"].keys()}
+        result, columns = self.query(self.view_name, {"id":id})
+        return {"table": self.alias, "data": result, "keys":columns}
 
     @use_args(arg_schema)
     @authenticate
@@ -274,5 +290,5 @@ class LeagueSummary(BaseResource):
 
     @use_args(arg_schema)
     def get(self, args):
-        result = self.query(self.name, args)
-        return {"table": self.alias, "data": result, "keys":schema["LeagueSummary"].keys()}
+        result, column = self.query(self.name, args)
+        return {"table": self.alias, "data": result, "keys":column}
