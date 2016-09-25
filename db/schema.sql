@@ -76,6 +76,7 @@ CREATE TABLE LeagueSummary
 	loss_count INTEGER DEFAULT(0),
 	tie_count INTEGER DEFAULT(0),
 	champion INTEGER DEFAULT(0),
+	point_diff INTEGER DEFAULT(0),
 	UNIQUE (league, team_name)
 );
 

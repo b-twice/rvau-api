@@ -20,6 +20,13 @@ def create_where(select_query, keys):
     arg_query = " AND ".join(["{}=?".format(key) for key in keys])
     return "WHERE {}".format(arg_query)
 
+def create_order(asc_list, desc_list):
+    desc_list = ["{} DESC".format(desc) for desc in desc_list]
+    desc_query = ",".join(desc_list)
+    asc_query = ",".join(asc_list)
+    query = [ q for q in [asc_query, desc_query] if q]
+    return "ORDER BY {}".format(",".join(query))
+
 def create_insert(table, keys):
     columns = ", ".join(keys)
     values =  ", ".join([":{}".format(key) for key in keys])

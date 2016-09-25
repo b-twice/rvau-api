@@ -48,9 +48,13 @@ CREATE VIEW HomeSummary AS
 		COUNT(CASE WHEN home_score > away_score AND game_type = "Season" THEN 1 END) AS win_count,
 		COUNT(CASE WHEN home_score < away_score AND game_type = "Season"  THEN 1 END) AS loss_count,
 		COUNT(CASE WHEN home_score = away_score AND game_type = "Season"  THEN 1 END) AS tie_count,
-		COUNT(CASE WHEN home_score > away_score AND game_type = "Championship" THEN 1 END) as champion
+		COUNT(CASE WHEN home_score > away_score AND game_type = "Final" THEN 1 END) as champion,
+		SUM(home_score) - SUM(away_score) as point_diff				
 	FROM GameView
 	GROUP BY league, home_team;
+
+SELECT "HOME SUMMARY";
+SELECT * FROM HomeSummary;
 
 DROP VIEW IF EXISTS AwaySummary;
 CREATE VIEW AwaySummary AS
@@ -59,21 +63,34 @@ CREATE VIEW AwaySummary AS
 		away_team as team_name,
 		COUNT(CASE WHEN away_score > home_score AND game_type = "Season"  THEN 1 END) AS win_count,
 		COUNT(CASE WHEN away_score < home_score AND game_type = "Season"  THEN 1 END) AS loss_count,
-		COUNT(CASE WHEN away_score > home_score AND game_type = "Championship" THEN 1 END) as champion		
+		COUNT(CASE WHEN away_score = home_score AND game_type = "Season"  THEN 1 END) AS tie_count,		
+		COUNT(CASE WHEN away_score > home_score AND game_type = "Final" THEN 1 END) as champion,
+		SUM(away_score) - SUM(home_score) as point_diff		
 	FROM GameView
 	GROUP BY league, away_team;
+
+SELECT "AWAY SUMMARY";
+SELECT * FROM AwaySummary;
 
 DROP VIEW IF EXISTS LeagueSummaryView;
 CREATE VIEW LeagueSummaryView AS
 	SELECT 
-		HomeSummary.league,
-		HomeSummary.team_name,
-		HomeSummary.win_count + AwaySummary.win_count AS win_count,
-		HomeSummary.loss_count + AwaySummary.loss_count AS loss_count,
-		HomeSummary.tie_count,
-		HomeSummary.champion + AwaySummary.champion AS champion	
-	FROM HomeSummary
-    INNER JOIN AwaySummary
-    ON HomeSummary.league = AwaySummary.league AND HomeSummary.league = AwaySummary.league
-	GROUP BY HomeSummary.league, HomeSummary.team_name;
+		league,
+		team_name,
+		SUM(win_count) as win_count,
+		SUM(loss_count) as loss_count,
+		SUM(tie_count) as tie_count,
+		SUM(champion) as champion,
+		SUM(point_diff) as point_diff
+		FROM (
+			SELECT league, team_name, win_count, loss_count, tie_count, champion, point_diff
+			FROM HomeSummary
+			UNION ALL
+			SELECT league, team_name, win_count, loss_count, tie_count, champion, point_diff
+			FROM AwaySummary
+			) 
+		GROUP BY league, team_name;
 
+
+SELECT "LEAGUE SUMMARY";
+SELECT * FROM LeagueSummaryView ORDER BY win_count DESC, tie_count DESC;

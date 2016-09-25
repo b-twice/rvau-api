@@ -24,6 +24,8 @@ class BaseResource(Resource):
     def cleanup_args(self, args):
         args.pop('unique', None)
         args.pop('exclude', None)
+        args.pop('ASC', None)
+        args.pop('DESC', None)
 
     def query(self, name, args):
         columns = []
@@ -34,12 +36,18 @@ class BaseResource(Resource):
             self.cleanup_args(args)
         else:
             columns = fields[name]
+            order = ""
             # Exclude removes any columns from query
+            if 'ASC' in args or 'DESC' in args:
+                asc_order_args = args['ASC'].split(',') if 'ASC' in args else [] 
+                desc_order_args = args['DESC'].split(',') if 'DESC' in args else []                       
+                order = create_order(asc_order_args, desc_order_args)    
             if 'exclude' in args:
                 columns = [c for c in columns if c not in args['exclude'].split(',')]
             self.cleanup_args(args)
-            select = "SELECT {} FROM {}".format(",".join(columns), name)     
-            select = "{} {}".format(select, create_where(name, args.keys())) if args else select
+            select = "SELECT {} FROM {}".format(",".join(columns), name)
+            where = create_where(name, args.keys())     
+            select = "{} {} {}".format(select, where, order) if args else select
         result = query_db(select, args.values())
         if len(result) == 0:
             abort(404)
@@ -161,8 +169,8 @@ class Players(BaseResource):
 
     @use_args(arg_schema)
     def get(self, args):
-        result = self.query(self.view_name, args)
-        return {"table": self.alias, "data": result,  "keys":schema["Player"].keys()}
+        result, columns = self.query(self.view_name, args)
+        return {"table": self.alias, "data": result,  "keys":columns}
 
     @use_args(arg_schema)
     @authenticate
