@@ -74,7 +74,7 @@ class BaseResource(Resource):
     def deleteRecord(self, name, args):
         statement = "DELETE FROM {} WHERE id=:id".format(name)
         isDelete = modify_db(statement, args)
-        if not isDelete:
+        if isDelete == False:
             abort(500, errors="Could not delete record. Record may be in use by another table.")
             return
         return args

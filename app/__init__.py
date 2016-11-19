@@ -1,11 +1,15 @@
 #!flask/bin/python
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config.from_object('config')
 api = Api(app)
 
+
+# CORS
+cors = CORS(app, origins=["http://localhost:8080", "http://rvau.bgeo.io"])
 
 # auth
 CLIENT_ID="TPZrTRxzqYySVXNwNsokXsFL25cTD1ML" 
