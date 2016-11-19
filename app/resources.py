@@ -57,7 +57,7 @@ class BaseResource(Resource):
     def insert(self, name, args, view_name=""):
         statement = create_insert(name, args.keys())
         insertId = modify_db(statement, args)
-        if not insertId:
+        if insertId == False:
             abort(500, errors="Could not add the row. The row may already exist.")
             return
         # Get full result of query
@@ -66,8 +66,8 @@ class BaseResource(Resource):
     def update(self, name, args):
         statement = create_update(name, args.keys())
         isUpdated = modify_db(statement, args)
-        if not isUpdated:
-            abort(500)
+        if isUpdated == False:
+            abort(500, errors="Could not update the record")
             return
         return args
 
@@ -75,7 +75,7 @@ class BaseResource(Resource):
         statement = "DELETE FROM {} WHERE id=:id".format(name)
         isDelete = modify_db(statement, args)
         if isDelete == False:
-            abort(500, errors="Could not delete record. Record may be in use by another table.")
+            abort(500, errors="Could not delete the record. Record may be in use by another table.")
             return
         return args
 
