@@ -9,7 +9,8 @@ api = Api(app)
 
 
 # CORS
-cors = CORS(app, origins=["http://localhost:8080", "http://rvau.bgeo.io"])
+# cors = CORS(app, origins=["http://localhost:8080", "http://rvau.bgeo.io"])
+cors = CORS(app, origins=["http://rvau.bgeo.io"])
 
 # auth
 CLIENT_ID="TPZrTRxzqYySVXNwNsokXsFL25cTD1ML" 
