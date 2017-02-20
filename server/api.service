@@ -1,0 +1,18 @@
+# DO NOT COPY - systemd unit file - /etc/systemd/system/api.service 
+# sudo vim /etc/systemd/system/api.service 
+# sudo systemctl start api
+# sudo systemctl enable api
+
+[Unit]
+Description=uWSGI instance to serve rvau-api
+After=network.target
+
+[Service]
+User=bgeo
+Group=www-data
+WorkingDirectory=/var/www/rvau-api
+Environment="PATH=/home/bgeo/anaconda/envs/rvau/bin"
+ExecStart=/home/bgeo/anaconda/envs/rvau/bin/uwsgi --ini api.ini
+
+[Install]
+WantedBy=multi-user.target
