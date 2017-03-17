@@ -90,7 +90,3 @@ CREATE VIEW LeagueSummaryView AS
 			FROM AwaySummary
 			) 
 		GROUP BY league, team_name;
-
-
-SELECT "LEAGUE SUMMARY";
-SELECT * FROM LeagueSummaryView ORDER BY win_count DESC, tie_count DESC;
