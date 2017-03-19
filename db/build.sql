@@ -1,10 +1,10 @@
 pragma foreign_keys=on;
 
 -- CLEAR AND BUILD
-.read reset.sql
-.read schema.sql
-.read seed.sql
-.read migrate.sql
-.read view.sql
+.read db/reset.sql
+.read db/schema.sql
+.read db/seed.sql
+.read db/view.sql
+.read db/migrate.sql
 
 
